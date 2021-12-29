@@ -275,46 +275,52 @@ public:
     }
 
     // 可视化AVLTree
-    void show_tree(AVL T, const char* elem_fmt="%d")
+    void show_tree()
     {
-        if (T.root == NULL)
+
+        if (this->root == NULL)
             return;
-        const int _MAX_STR_LEN = 128;        //单个元素打印成str最大长度
-        const int _MAX_NODE_NUM = 1024;      //结点最大个数
-        const char horiz_conj_char ='_';    //连接横线
-        const char vert_conj_char = '|';     //竖线
-        const char left_bracket_char = '[';  //每个元素左边的括号
-        const char right_bracket_char = ']'; //元素右边的括号
+
+        int _MAX_STR_LEN = 1280;    //限制str数量
+        int _MAX_NODE_NUM = 10240;   //限制结点最大个数
+        string horiz_conj_char ="─";   //横线
+        string vert_conj_char = "│";    //做树状结构的竖线
+
+        //实现思路：
+        // 利用辅助的结构体来存储信息
 
         //思路: 层序遍历算深度, 中序遍历算横坐标, 用结构体数组把这些信息存好再统一打印
-        typedef struct _node_print_info
-        {
-            node* address; //二次遍历时的唯一区分标志，即key //用hash表将地址映射会更省时间空间
-            int str_len;
-            int depth;
-            int left_margin; // horizontal coordintate
-        } _Info;
 
+
+        typedef struct node_print_info
+        {
+            node* address; //字典保存
+            int str_len; //value长度，默认左右长度为2
+            int depth;  //本节点的所在深度，因为绘制中只能层次遍历
+            int left_margin;  //横坐标
+        } Node_print_info;
+
+        //初始化辅助信息
         node* tree_deque[_MAX_NODE_NUM];
         int depth_queue[_MAX_NODE_NUM]; //记录深度的队列
-        _Info* info_p_arr[_MAX_NODE_NUM];
+        Node_print_info* info_p_arr[_MAX_NODE_NUM];
         int node_count = 0;
         int front = -1, rear = -1;
         node* p;
-        _Info* info_p;
-        char temp_str[_MAX_STR_LEN];
+        Node_print_info* info_p;
+        char max_str_list[_MAX_STR_LEN];
 
-        //用队列统计结点的深度信息, 顺便统计每个结点数据打印时的长度
-        tree_deque[++rear] = T.root;
+        //1. 利用队列来进行层次遍历 ,存储深度和长度
+        tree_deque[++rear] = this->root;
         depth_queue[rear] = 1;
         while (front < rear)
         {
             p = tree_deque[++front];
-            info_p = (_Info*)calloc(1, sizeof(_Info));
+            Node_print_info* info_p = new Node_print_info  ;
             info_p->address = p; //记录地址
-            memset(temp_str, 0, _MAX_STR_LEN);
-            sprintf(temp_str, elem_fmt, p->data);   // TODO: 注意
-            info_p->str_len = strlen(temp_str) + 2; //计算打印后的元素长度
+            memset(max_str_list, 0, _MAX_STR_LEN);
+            sprintf(max_str_list, "%d", p->data);   // 限制长度
+            info_p->str_len = strlen(max_str_list) + 2; //假设两边长度是2个横线
             info_p->depth = depth_queue[front];
             info_p_arr[node_count++] = info_p;
 
@@ -330,10 +336,10 @@ public:
             }
         }
 
-        //接下来统计横坐标, 用中序遍历
-        p = T.root;
+        //2.进行中序遍历，用于计算每个节点的横坐标 
+        p = this->root;
         int top = -1, i;
-        int horizontal_accumu_cache = 0; //横坐标累计长度
+        int cum_x_location = 0; //累计长度
         do
         {
             while (p != NULL)
@@ -343,32 +349,36 @@ public:
             }
             p = tree_deque[top--];
             for (i = 0; i < node_count; ++i)
-            { //这里用hash表的优势就体现出来了
+            { 
                 if (info_p_arr[i]->address == p)
-                { //计算横坐标
-                    info_p_arr[i]->left_margin = horizontal_accumu_cache;
-                    horizontal_accumu_cache += info_p_arr[i]->str_len - 1; //减一可以重叠一个括号,更紧凑一点点
+                { 
+                    info_p_arr[i]->left_margin = cum_x_location;
+                    cum_x_location += info_p_arr[i]->str_len - 1; //更新
                 }
             }
             p = p->right;
         } while (!(p == NULL && top == -1));
+        //cout<<cum_x_location<<endl;
 
-        //接下来开始打印
+        //打印
         int horiz_left_start, horiz_right_end, cursor, j, k, cur_depth = 1, end_flag = 0;
-        int vert_index_arr[_MAX_NODE_NUM]; //偶数行的竖线存储数组
+        int vert_index_arr[_MAX_NODE_NUM]; //用于存储竖线信息
         i = 0;
         while (i < node_count)
         {
             k = -1;
             cursor = 0;
+            int thiscurcount=-1;
             while (info_p_arr[i]->depth == cur_depth)
             {
-                //打印左边
-                p = info_p_arr[i]->address;
+                thiscurcount++;
+
+                //left
+                p = info_p_arr[i]->address;  //节点指针
                 if (p->left != NULL)
-                { //有左孩子说明有横线要打印
+                { 
                     for (j = 0; j < node_count; ++j)
-                    { //暴力查找
+                    { //查找  ，复杂度高
                         if (info_p_arr[j]->address == p->left)
                         {
                             horiz_left_start = info_p_arr[j]->left_margin + info_p_arr[j]->str_len / 2;
@@ -376,24 +386,33 @@ public:
                             break;
                         }
                     }
+                    //空格
                     for (; cursor < horiz_left_start; ++cursor)
+                    { 
                         cout <<  " ";
+                    }
+
+                    cout <<"┌";
+                    cursor++;
+
                     for (; cursor < info_p_arr[i]->left_margin; ++cursor)
+                    {
                         cout << horiz_conj_char;
+                    }
                 }
-                else
-                { //没有左孩子全打印空格即可
-                    for (; cursor < info_p_arr[i]->left_margin; ++cursor)
-                        cout << " ";
-                }
+                else for (; cursor < info_p_arr[i]->left_margin; ++cursor) cout << " ";
 
                 //打印元素
-                cout << left_bracket_char;
+                if(p->left !=nullptr) cout << horiz_conj_char;
+                else cout << " "; //没孩子就空格
                 cout << p->data;
-                cout << right_bracket_char;
+
+                if(p->right !=nullptr) cout << horiz_conj_char;
+                else cout << " ";
+
                 cursor += info_p_arr[i]->str_len;
 
-                //打印右边
+                //right，相同逻辑
                 if (p->right != NULL)
                 {
                     for (j = 0; j < node_count; ++j)
@@ -405,26 +424,25 @@ public:
                             break;
                         }
                     }
-                    for (; cursor < horiz_right_end; ++cursor)
-                        cout << horiz_conj_char;
-                } //右边没有else ,因为只考虑横线即可, 空白算到同层下一个元素左边
-
+                    for (; cursor < horiz_right_end; ++cursor)cout << horiz_conj_char;
+                    cout <<"┐";
+                    ++cursor;
+                } 
                 if (++i >= node_count)
                 {
-                    end_flag = 1; //打印完最后一个元素, 下一行不需要竖线了,提前结束
+                    end_flag = 1; 
                     break;
                 }
             }
             cout << "\n";
 
-            //打印竖线
+            //下一行，打印竖线
             if (!end_flag)
             {
                 cursor = 0;
                 for (j = 0; j <= k; ++j)
                 {
-                    for (; cursor < vert_index_arr[j]; ++cursor)
-                        cout << " ";
+                    for (; cursor < vert_index_arr[j]; ++cursor)  cout << " "; //已经存储好竖线位置
                     cout << vert_conj_char;
                     cursor++;
                 }
@@ -433,10 +451,9 @@ public:
             cur_depth++;
         }
         for (i = 0; i < node_count; ++i)
-            free(info_p_arr[i]); //释放空间
+            delete (info_p_arr[i]); 
         return;
     }
-
     ~AVL(){}
 };
 
@@ -448,12 +465,12 @@ int main(){
     int c,x;
 
     do{
-        // cout<<"\n1.Display\n";
-        // cout<<"\n2.Insert\n";
-        // cout<<"\n3.Delete\n";
-        // cout<<"\n4.Batch Insert\n";
-        // cout<<"\n0.Exit\n";
-        // cout<<"\nYour choice: "; 
+        cout<<"\n1.Display\n";
+        cout<<"\n2.Insert\n";
+        cout<<"\n3.Delete\n";
+        cout<<"\n4.Batch Insert\n";
+        cout<<"\n0.Exit\n";
+        cout<<"\nYour choice: "; 
 
         cin>>c; 
 
@@ -461,7 +478,7 @@ int main(){
         {
         case 1:
             cout<<"\n";
-            b.show_tree(b);
+            b.show_tree();
             break;
                   
         case 2:
