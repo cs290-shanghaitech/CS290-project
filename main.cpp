@@ -107,28 +107,28 @@ public:
         else{return 0;}
     }
 
-    // 右旋
+    // 右旋，插入在左子树的左孩子
     struct node * llrotation(struct node *n){
-        struct node *p;
+        //struct node *p;
         struct node *tp;
-        p = n;
-        tp = p->left;
+        //p = n;
 
-        p->left = tp->right;
-        tp->right = p;
+        tp = n->left;
+        n->left = tp->right;
+        tp->right = n;
 
         return tp; 
     }
 
     // 左旋
     struct node * rrrotation(struct node *n){
-        struct node *p;
+        //struct node *p;
         struct node *tp;
-        p = n;
-        tp = p->right;
+        //p = n;
 
-        p->right = tp->left;
-        tp->left = p;
+        tp = n->right;
+        n->right = tp->left;
+        tp->left = n;
 
         return tp; 
     }
@@ -149,6 +149,8 @@ public:
         tp2->right = tp; 
         
         return tp2; 
+        /* n->left = llrotation(n->left);
+        return rrrotation(n); */
     }
 
     // 先左旋后右旋
@@ -166,6 +168,8 @@ public:
         tp2->left = tp; 
         
         return tp2; 
+        /* n->right = rrrotation(n->right);
+        return llrotation(n); */
     }
 
     struct node* insert(struct node *r,int data){
