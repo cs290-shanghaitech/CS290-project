@@ -216,7 +216,7 @@ public:
             p->left = deleteNode(p->left,data);
         }
         else{
-            if(p->left != NULL){
+            if(p->left != NULL){ 
                 q = traverse_right(p->left);
                 p->data = q->data;
                 p->left=deleteNode(p->left,q->data);
@@ -448,12 +448,12 @@ int main(){
     int c,x;
 
     do{
-        cout<<"\n1.Display\n";
-        cout<<"\n2.Insert\n";
-        cout<<"\n3.Delete\n";
-        cout<<"\n4.Batch Insert\n";
-        cout<<"\n0.Exit\n";
-        cout<<"\nYour choice: "; 
+        // cout<<"\n1.Display\n";
+        // cout<<"\n2.Insert\n";
+        // cout<<"\n3.Delete\n";
+        // cout<<"\n4.Batch Insert\n";
+        // cout<<"\n0.Exit\n";
+        // cout<<"\nYour choice: "; 
 
         cin>>c; 
 
@@ -487,9 +487,8 @@ int main(){
         case 0:
             break;
         }
-        
+        // 1
 
      } while(!cin.eof());
-     
   
 }
