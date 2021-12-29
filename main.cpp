@@ -59,38 +59,10 @@ public:
         p->height=thisheight;
         return thisheight;
 
-        // string node_type(get_node_type(p));
-
-        // // 左右子树都有，返回高的那个
-        // if(node_type == "bchild"){
-
-        //     cout<<p->right->data<<" height:"<<p->right->height<<endl;
-        //     cout<<p->left->data<<" height:"<<p->left->height<<endl;
-
-        //     if (p->left->height < p->right->height)
-        //         return p->right->height + 1;
-        //     else return  p->left->height + 1;
-        // }
-
-        // // 右子树为空，返回左子树高度
-        // else if(node_type == "lchild"){
-        //     return p->left->height + 1;
-        // }
-
-        // // 左子树为空，返回右子树高度
-        // else if(node_type =="rchild"){
-        //     return p->right->height + 1;
-        // }
-        
-        // // 左右都为空，返回当前结点高度
-        // else{
-        //     return p->height;
-        // }
-
     }
 
     // 计算左右子树高度差，后续依据不同的高度差进行对应旋转操作
-    int bf(struct node *n){
+    int cal_balance_factor(struct node *n){
         string node_type(get_node_type(n));
 
         if(node_type == "bchild"){
@@ -209,23 +181,23 @@ public:
         cout<<endl; */
 
         // 插入点在左子树的左孩子，右旋
-        if(bf(r)==2 && bf(r->left)==1){
+        if(cal_balance_factor(r)==2 && cal_balance_factor(r->left)==1){
             r = llrotation(r);
             calheight(r);
 
         }
         // 左旋
-        else if(bf(r)==-2 && bf(r->right)==-1){
+        else if(cal_balance_factor(r)==-2 && cal_balance_factor(r->right)==-1){
             r = rrrotation(r);
             calheight(r);
         }
         // 先右旋再左旋
-        else if(bf(r)==-2 && bf(r->right)==1){
+        else if(cal_balance_factor(r)==-2 && cal_balance_factor(r->right)==1){
             r = rlrotation(r);
             calheight(r);
         }
         // 先左旋再右旋
-        else if(bf(r)==2 && bf(r->left)==-1){
+        else if(cal_balance_factor(r)==2 && cal_balance_factor(r->left)==-1){
             r = lrrotation(r);
             calheight(r);
         }        
@@ -278,38 +250,38 @@ public:
         }
         else{
             if(p->left != NULL){
-                q = inpre(p->left);
+                q = traverse_right(p->left);
                 p->data = q->data;
                 p->left=deleteNode(p->left,q->data);
             }
             else{
-                q = insuc(p->right);
+                q = traverse_left(p->right);
                 p->data = q->data;
                 p->right = deleteNode(p->right,q->data);
             }
         }
 
         // 删除后维护树平衡
-        if(bf(p)==2 && bf(p->left)==1){ p = llrotation(p); calheight(p);}                  
-        else if(bf(p)==2 && bf(p->left)==-1){ p = lrrotation(p); calheight(p);}
-        else if(bf(p)==2 && bf(p->left)==0){ p = llrotation(p); calheight(p);}
-        else if(bf(p)==-2 && bf(p->right)==-1){ p = rrrotation(p); calheight(p);}
-        else if(bf(p)==-2 && bf(p->right)==1){ p = rlrotation(p); calheight(p);}
-        else if(bf(p)==-2 && bf(p->right)==0){ p = llrotation(p); calheight(p);}
+        if(cal_balance_factor(p)==2 && cal_balance_factor(p->left)==1){ p = llrotation(p); calheight(p);}                  
+        else if(cal_balance_factor(p)==2 && cal_balance_factor(p->left)==-1){ p = lrrotation(p); calheight(p);}
+        else if(cal_balance_factor(p)==2 && cal_balance_factor(p->left)==0){ p = llrotation(p); calheight(p);}
+        else if(cal_balance_factor(p)==-2 && cal_balance_factor(p->right)==-1){ p = rrrotation(p); calheight(p);}
+        else if(cal_balance_factor(p)==-2 && cal_balance_factor(p->right)==1){ p = rlrotation(p); calheight(p);}
+        else if(cal_balance_factor(p)==-2 && cal_balance_factor(p->right)==0){ p = llrotation(p); calheight(p);}
 
         
         return p;
     }
 
     // 遍历右子节点
-    struct node* inpre(struct node* p){
+    struct node* traverse_right(struct node* p){
         while(p->right!=NULL)
             p = p->right;
         return p;    
     }
 
     // 遍历左子节点
-    struct node* insuc(struct node* p){
+    struct node* traverse_left(struct node* p){
         while(p->left!=NULL)
             p = p->left;
 
@@ -509,12 +481,12 @@ int main(){
     int c,x;
 
     do{
-        /* cout<<"\n1.Display\n";
+        cout<<"\n1.Display\n";
         cout<<"\n2.Insert\n";
         cout<<"\n3.Delete\n";
         cout<<"\n4.Batch Insert\n";
         cout<<"\n0.Exit\n";
-        cout<<"\nYour choice: "; */
+        cout<<"\nYour choice: "; 
 
         cin>>c; 
 
