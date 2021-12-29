@@ -66,8 +66,6 @@ public:
         string node_type(get_node_type(n));
 
         if(node_type == "bchild"){
-            /* cout<<n->left->data<<" height:"<<n->left->height<<endl;
-            cout<<n->right->data<<" height:"<<n->right->height<<endl; */
             return n->left->height - n->right->height; 
         }
         else if(node_type == "lchild"){
@@ -118,7 +116,7 @@ public:
 
     struct node* insert(struct node *r,int data){
         
-        // 创建根节点
+        // 找到插入点后插入，初始化高度为1
         if(r==NULL){
             struct node *n;
             n = new struct node;
@@ -129,7 +127,7 @@ public:
             return r;             
         }
 
-        // 插入结点
+        // 查找到插入点位置
         else{
             if(data < r->data)
             r->left = insert(r->left,data);
@@ -148,9 +146,6 @@ public:
         }
 
         r->height = calheight(r);
-       /*  cout<<endl;
-        cout<<r->data<<" height:"<<r->height<<endl;
-        cout<<endl; */
 
         // 插入点在左子树的左孩子，右旋
         if(cal_balance_factor(r)==2 && cal_balance_factor(r->left)==1){
