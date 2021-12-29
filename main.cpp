@@ -466,7 +466,7 @@ int main(){
         cout<<"\n4.Batch Insert\n";
         cout<<"\n0.Exit\n";
         cout<<"\nYour choice: "; 
-    ////
+    //////
         cin>>c; 
 
         switch (c)
