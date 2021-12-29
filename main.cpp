@@ -477,12 +477,12 @@ int main(){
     int c,x;
 
     do{
-        /* cout<<"\n1.Display\n";
+        cout<<"\n1.Display\n";
         cout<<"\n2.Insert\n";
         cout<<"\n3.Delete\n";
         cout<<"\n4.Batch Insert\n";
         cout<<"\n0.Exit\n";
-        cout<<"\nYour choice: "; */
+        cout<<"\nYour choice: "; 
 
         cin>>c; 
 
