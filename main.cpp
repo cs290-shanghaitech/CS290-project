@@ -94,8 +94,8 @@ public:
         string node_type(get_node_type(n));
 
         if(node_type == "bchild"){
-            cout<<n->left->data<<" height:"<<n->left->height<<endl;
-            cout<<n->right->data<<" height:"<<n->right->height<<endl;
+            /* cout<<n->left->data<<" height:"<<n->left->height<<endl;
+            cout<<n->right->data<<" height:"<<n->right->height<<endl; */
             return n->left->height - n->right->height; 
         }
         else if(node_type == "lchild"){
@@ -200,9 +200,9 @@ public:
         }
 
         r->height = calheight(r);
-        cout<<endl;
+       /*  cout<<endl;
         cout<<r->data<<" height:"<<r->height<<endl;
-        cout<<endl;
+        cout<<endl; */
 
         // 插入点在左子树的左孩子，右旋
         if(bf(r)==2 && bf(r->left)==1){
@@ -505,14 +505,14 @@ int main(){
     int c,x;
 
     do{
-        cout<<"\n1.Display\n";
+        /* cout<<"\n1.Display\n";
         cout<<"\n2.Insert\n";
         cout<<"\n3.Delete\n";
         cout<<"\n4.Batch Insert\n";
         cout<<"\n0.Exit\n";
-        cout<<"\nYour choice: ";
+        cout<<"\nYour choice: "; */
 
-        cin>>c;
+        cin>>c; 
 
         switch (c)
         {
@@ -535,15 +535,17 @@ int main(){
         case 4:
             cout<<"\nPlease enter the numbers to be inserted, separate with spaces\n ";
             while(cin >> x){
+                if (x== -1) break;
                 b.root = b.insert(b.root,x);
-                if (cin.get() == '\n') break;
             }
             break;
             
         case 0:
             break;
         }
+        
 
-     } while(c!=0);
+     } while(!cin.eof());
+     
   
 }
