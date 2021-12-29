@@ -81,10 +81,7 @@ public:
 
     // 右旋，插入在左子树的左孩子
     struct node * llrotation(struct node *n){
-        //struct node *p;
         struct node *tp;
-        //p = n;
-
         tp = n->left;
         n->left = tp->right;
         tp->right = n;
@@ -94,10 +91,7 @@ public:
 
     // 左旋
     struct node * rrrotation(struct node *n){
-        //struct node *p;
         struct node *tp;
-        //p = n;
-
         tp = n->right;
         n->right = tp->left;
         tp->left = n;
@@ -108,40 +102,18 @@ public:
 
     // 先右旋后左旋
     struct node * rlrotation(struct node *n){
-        struct node *p;
         struct node *tp;
-        struct node *tp2;
-        p = n;
-        tp = p->right;
-        tp2 =p->right->left;
-
-        p -> right = tp2->left;
-        tp ->left = tp2->right;
-        tp2 ->left = p;
-        tp2->right = tp; 
-        
-        return tp2; 
-        /* n->left = llrotation(n->left);
-        return rrrotation(n); */
+        n->right = llrotation(n->right);
+        tp = rrrotation(n);
+        return tp;
     }
 
     // 先左旋后右旋
     struct node * lrrotation(struct node *n){
-        struct node *p;
         struct node *tp;
-        struct node *tp2;
-        p = n;
-        tp = p->left;
-        tp2 =p->left->right;
-
-        p -> left = tp2->right;
-        tp ->right = tp2->left;
-        tp2 ->right = p;
-        tp2->left = tp; 
-        
-        return tp2; 
-        /* n->right = rrrotation(n->right);
-        return llrotation(n); */
+        n->left = rrrotation(n->left);
+        tp = llrotation(n);
+        return tp;
     }
 
     struct node* insert(struct node *r,int data){
@@ -493,6 +465,7 @@ int main(){
         switch (c)
         {
         case 1:
+            cout<<"\n";
             b.show_tree(b);
             break;
                   
