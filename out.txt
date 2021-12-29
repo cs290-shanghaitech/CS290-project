@@ -1,0 +1,23 @@
+
+1.Display
+
+2.Insert
+
+3.Delete
+
+4.Batch Insert
+
+0.Exit
+
+Your choice: 
+Please enter the numbers to be inserted, separate with spaces
+ 
+**************************************
+Failed
+Data 65 already exists!
+**************************************
+
+**************************************
+Failed
+Data 1 already exists!
+**************************************
