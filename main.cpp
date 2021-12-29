@@ -59,34 +59,6 @@ public:
         p->height=thisheight;
         return thisheight;
 
-        // string node_type(get_node_type(p));
-
-        // // 左右子树都有，返回高的那个
-        // if(node_type == "bchild"){
-
-        //     cout<<p->right->data<<" height:"<<p->right->height<<endl;
-        //     cout<<p->left->data<<" height:"<<p->left->height<<endl;
-
-        //     if (p->left->height < p->right->height)
-        //         return p->right->height + 1;
-        //     else return  p->left->height + 1;
-        // }
-
-        // // 右子树为空，返回左子树高度
-        // else if(node_type == "lchild"){
-        //     return p->left->height + 1;
-        // }
-
-        // // 左子树为空，返回右子树高度
-        // else if(node_type =="rchild"){
-        //     return p->right->height + 1;
-        // }
-        
-        // // 左右都为空，返回当前结点高度
-        // else{
-        //     return p->height;
-        // }
-
     }
 
     // 计算左右子树高度差，后续依据不同的高度差进行对应旋转操作
