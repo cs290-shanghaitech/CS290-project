@@ -289,21 +289,18 @@ public:
         //实现思路：
         // 利用辅助的结构体来存储信息
 
-        //思路: 层序遍历算深度, 中序遍历算横坐标, 用结构体数组把这些信息存好再统一打印
-
-
-        typedef struct node_print_info
+        struct Node_print_info
         {
-            node* address; //字典保存
+            node* node_pointer; //字典保存
             int str_len; //value长度，默认左右长度为2
             int depth;  //本节点的所在深度，因为绘制中只能层次遍历
-            int left_margin;  //横坐标
-        } Node_print_info;
+            int left_index;  //横坐标
+        } ;
 
         //初始化辅助信息
-        node* tree_deque[_MAX_NODE_NUM];
-        int depth_queue[_MAX_NODE_NUM]; //记录深度的队列
-        Node_print_info* info_p_arr[_MAX_NODE_NUM];
+        node* avl_queue[_MAX_NODE_NUM];
+        int dp_queue[_MAX_NODE_NUM]; //记录深度的队列
+        Node_print_info* print_info_list[_MAX_NODE_NUM];
         int node_count = 0;
         int front = -1, rear = -1;
         node* p;
@@ -311,28 +308,28 @@ public:
         char max_str_list[_MAX_STR_LEN];
 
         //1. 利用队列来进行层次遍历 ,存储深度和长度
-        tree_deque[++rear] = this->root;
-        depth_queue[rear] = 1;
+        avl_queue[++rear] = this->root;
+        dp_queue[rear] = 1;
         while (front < rear)
         {
-            p = tree_deque[++front];
+            p = avl_queue[++front];
             Node_print_info* info_p = new Node_print_info  ;
-            info_p->address = p; //记录地址
+            info_p->node_pointer = p; //记录地址
             memset(max_str_list, 0, _MAX_STR_LEN);
             sprintf(max_str_list, "%d", p->data);   // 限制长度
             info_p->str_len = strlen(max_str_list) + 2; //假设两边长度是2个横线
-            info_p->depth = depth_queue[front];
-            info_p_arr[node_count++] = info_p;
+            info_p->depth = dp_queue[front];
+            print_info_list[node_count++] = info_p;
 
             if (p->left != NULL)
             {
-                tree_deque[++rear] = p->left;
-                depth_queue[rear] = depth_queue[front] + 1;
+                avl_queue[++rear] = p->left;
+                dp_queue[rear] = dp_queue[front] + 1;
             }
             if (p->right != NULL)
             {
-                tree_deque[++rear] = p->right;
-                depth_queue[rear] = depth_queue[front] + 1;
+                avl_queue[++rear] = p->right;
+                dp_queue[rear] = dp_queue[front] + 1;
             }
         }
 
@@ -344,16 +341,16 @@ public:
         {
             while (p != NULL)
             {
-                tree_deque[++top] = p;
+                avl_queue[++top] = p;
                 p = p->left;
             }
-            p = tree_deque[top--];
+            p = avl_queue[top--];
             for (i = 0; i < node_count; ++i)
             { 
-                if (info_p_arr[i]->address == p)
+                if (print_info_list[i]->node_pointer == p)
                 { 
-                    info_p_arr[i]->left_margin = cum_x_location;
-                    cum_x_location += info_p_arr[i]->str_len - 1; //更新
+                    print_info_list[i]->left_index = cum_x_location;
+                    cum_x_location += print_info_list[i]->str_len - 1; //更新
                 }
             }
             p = p->right;
@@ -362,27 +359,25 @@ public:
 
         //打印
         int horiz_left_start, horiz_right_end, cursor, j, k, cur_depth = 1, end_flag = 0;
-        int vert_index_arr[_MAX_NODE_NUM]; //用于存储竖线信息
+        int vert_xindex[_MAX_NODE_NUM]; //用于存储竖线信息
         i = 0;
         while (i < node_count)
         {
             k = -1;
             cursor = 0;
-            int thiscurcount=-1;
-            while (info_p_arr[i]->depth == cur_depth)
+            while (print_info_list[i]->depth == cur_depth)
             {
-                thiscurcount++;
 
                 //left
-                p = info_p_arr[i]->address;  //节点指针
+                p = print_info_list[i]->node_pointer;  //节点指针
                 if (p->left != NULL)
                 { 
                     for (j = 0; j < node_count; ++j)
                     { //查找  ，复杂度高
-                        if (info_p_arr[j]->address == p->left)
+                        if (print_info_list[j]->node_pointer == p->left)
                         {
-                            horiz_left_start = info_p_arr[j]->left_margin + info_p_arr[j]->str_len / 2;
-                            vert_index_arr[++k] = horiz_left_start;
+                            horiz_left_start = print_info_list[j]->left_index + print_info_list[j]->str_len / 2;
+                            vert_xindex[++k] = horiz_left_start;
                             break;
                         }
                     }
@@ -395,12 +390,12 @@ public:
                     cout <<"┌";
                     cursor++;
 
-                    for (; cursor < info_p_arr[i]->left_margin; ++cursor)
+                    for (; cursor < print_info_list[i]->left_index; ++cursor)
                     {
                         cout << horiz_conj_char;
                     }
                 }
-                else for (; cursor < info_p_arr[i]->left_margin; ++cursor) cout << " ";
+                else for (; cursor < print_info_list[i]->left_index; ++cursor) cout << " ";
 
                 //打印元素
                 if(p->left !=nullptr) cout << horiz_conj_char;
@@ -410,17 +405,17 @@ public:
                 if(p->right !=nullptr) cout << horiz_conj_char;
                 else cout << " ";
 
-                cursor += info_p_arr[i]->str_len;
+                cursor += print_info_list[i]->str_len;
 
                 //right，相同逻辑
                 if (p->right != NULL)
                 {
                     for (j = 0; j < node_count; ++j)
                     {
-                        if (info_p_arr[j]->address == p->right)
+                        if (print_info_list[j]->node_pointer == p->right)
                         {
-                            horiz_right_end = info_p_arr[j]->left_margin + info_p_arr[j]->str_len / 2;
-                            vert_index_arr[++k] = horiz_right_end;
+                            horiz_right_end = print_info_list[j]->left_index + print_info_list[j]->str_len / 2;
+                            vert_xindex[++k] = horiz_right_end;
                             break;
                         }
                     }
@@ -442,7 +437,7 @@ public:
                 cursor = 0;
                 for (j = 0; j <= k; ++j)
                 {
-                    for (; cursor < vert_index_arr[j]; ++cursor)  cout << " "; //已经存储好竖线位置
+                    for (; cursor < vert_xindex[j]; ++cursor)  cout << " "; //已经存储好竖线位置
                     cout << vert_conj_char;
                     cursor++;
                 }
@@ -451,7 +446,7 @@ public:
             cur_depth++;
         }
         for (i = 0; i < node_count; ++i)
-            delete (info_p_arr[i]); 
+            delete (print_info_list[i]); 
         return;
     }
     ~AVL(){}
