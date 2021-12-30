@@ -63,6 +63,10 @@ public:
 
     // 计算左右子树高度差，后续依据不同的高度差进行对应旋转操作
     int cal_balance_factor(struct node *n){
+        if(n==NULL){
+            return 0;
+        }
+
         string node_type(get_node_type(n));
 
         if(node_type == "bchild"){
@@ -229,12 +233,21 @@ public:
         }
 
         // 删除后维护树平衡
+        /* cout<<"p data: "<<p->data<<endl;
+        cout<<"p factor: "<<cal_balance_factor(p)<<endl;
+        cout<<"p left_factor: "<<cal_balance_factor(p->left)<<endl;
+        cout<<"p right_factor: "<<cal_balance_factor(p->right)<<endl<<endl; */
+
         if(cal_balance_factor(p)==2 && cal_balance_factor(p->left)==1){ p = llrotation(p); calheight(p);}                  
         else if(cal_balance_factor(p)==2 && cal_balance_factor(p->left)==-1){ p = lrrotation(p); calheight(p);}
         else if(cal_balance_factor(p)==2 && cal_balance_factor(p->left)==0){ p = llrotation(p); calheight(p);}
         else if(cal_balance_factor(p)==-2 && cal_balance_factor(p->right)==-1){ p = rrrotation(p); calheight(p);}
         else if(cal_balance_factor(p)==-2 && cal_balance_factor(p->right)==1){ p = rlrotation(p); calheight(p);}
         else if(cal_balance_factor(p)==-2 && cal_balance_factor(p->right)==0){ p = llrotation(p); calheight(p);}
+
+        calheight(p->left);
+        calheight(p->right);
+        calheight(p);
 
         
         return p;
@@ -460,13 +473,13 @@ int main(){
     int c,x;
 
     do{
-        cout<<"\n1.Display\n";
+        /* cout<<"\n1.Display\n";
         cout<<"\n2.Insert\n";
         cout<<"\n3.Delete\n";
         cout<<"\n4.Batch Insert\n";
         cout<<"\n0.Exit\n";
-        cout<<"\nYour choice: "; 
-    //////
+        cout<<"\nYour choice: "; */ 
+
         cin>>c; 
 
         switch (c)
@@ -479,12 +492,14 @@ int main(){
         case 2:
             cout<<"\nPlease enter the number to be inserted\n ";
             cin>>x;
+            cout<<x<<endl;
             b.root = b.insert(b.root,x);
             break;
         
         case 3:
             cout<<"\nPlease enter the number to be deleted\n ";
             cin>>x;
+            cout<<x<<endl;
             b.root = b.deleteNode(b.root,x);
             break;
 
